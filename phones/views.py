@@ -1,4 +1,3 @@
-from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -38,10 +37,14 @@ def show_search_form(request):
 
 def find_entry(request):
     phone_number = request.GET.get('phone', None)
+    status = request.GET.get('status', None)
+    choices = {'contain': Entry.objects.filter(phone_number__contains=phone_number),
+               'exact': Entry.objects.filter(phone_number__exact=phone_number),
+               'start': Entry.objects.filter(phone_number__startswith=phone_number),
+               'end': Entry.objects.filter(phone_number__endswith=phone_number)}
     if not phone_number:
         return JsonResponse(data={'success': False, 'error': 'No number specified'}, status=400)
-
-    qs = Entry.objects.filter(phone_number__contains=phone_number)
+    qs = choices[status]
     if not qs.count():
         return JsonResponse(data={'success': False, 'error': 'No number specified'}, status=400)
     return JsonResponse(data={'results': list(qs.values()), 'count': qs.count()}, status=200)
