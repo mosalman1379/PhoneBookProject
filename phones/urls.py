@@ -1,11 +1,11 @@
 from django.urls import path
-
-from phones.views import create_entry, find_entry, show_search_form, show_add_entry_form
+from phones.views import find_entry, CreateEntry, Login, Logout, ShowContact
 
 app_name = 'phones'
 urlpatterns = [
-    path('create/', create_entry, name='create'),
     path('find/', find_entry, name='find'),
-    path('search/', show_search_form, name='search'),
-    path('', show_add_entry_form, name='show_add_entry_form')
+    path('search/', ShowContact.as_view(), name='search'),
+    path('register/', CreateEntry.as_view(), name='register'),
+    path('logout/', Logout.as_view(), name='logout'),
+    path('', Login.as_view(), name='login')
 ]

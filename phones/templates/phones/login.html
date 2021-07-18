@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Log-in{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1 class="text-center text-primary col-6">Log in 🔐</h1>
+        <form method="post" class="justify-content-center">
+            {% csrf_token %}
+            <div class="form-group col-6">
+                <label for="user">Username: </label>
+                {{ form.username|add_class:'form-control'|attr:'placeholder:Enter your username' }}
+            </div>
+            <div class="form-group col-6">
+                <label for="pass">Password: </label>
+                {{ form.password|add_class:'form-control'|attr:'placeholder:Enter your password' }}
+            </div>
+            <button class=" ml-5 col-4 btn btn-success">Log-in</button>
+
+        </form>
+    </div>
+
+{% endblock %}

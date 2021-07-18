@@ -6,6 +6,7 @@
     <div class="container">
         <h1 class="text-center">Register new contact</h1>
         <form method="post">
+            {% csrf_token %}
             <div class="form-group">
                 <label>Surname:</label>
                 {{ form.name|add_class:'form-control' }}
@@ -16,7 +17,7 @@
             </div>
             <div class="form-group">
                 <label>Phone-number:</label>
-                {{ form.phone_number|add_class:'form-control' }}
+                {{ form.phone_number|add_class:'form-control'|attr:'maxlength:11' }}
             </div>
         </form>
         <div class="justify-content-center d-flex">
@@ -29,10 +30,11 @@
         $(document).ready(function () {
             $('#send_form').on('click', function () {
                 let surname = $('#id_name').val();
+                let message = $('#message');
                 let family_name = $('#id_last_name').val();
                 let phone_number = $('#id_phone_number').val();
                 $.ajax({
-                    url: "{% url 'phones:create' %}",
+                    url: "{% url 'phones:register' %}",
                     method: 'POST',
                     data: {
                         name: surname,
@@ -40,14 +42,20 @@
                         phone_number: phone_number
                     },
                     success: function (response) {
-                        $('#message').removeClass('invisible').addClass('alert-success')
+                        if (message.hasClass('alert-danger')) {
+                            message.removeClass('alert-danger');
+                        }
+                        message.removeClass('invisible').addClass('alert-success')
                             .html('You\'re registered successfully');
                     },
                     error: function (response) {
-                        $('#message').removeClass('invisible').addClass('alert-danger')
+                        if (message.hasClass('alert-success')) {
+                            message.removeClass('alert-success');
+                        }
+                        message.removeClass('invisible').addClass('alert-danger')
                             .html('You\'re inputs is invalid.Try again');
                     }
-                })
+                });
             });
         });
     </script>
