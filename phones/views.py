@@ -3,12 +3,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from phones.forms import EntryForm
 from phones.models import Entry
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, UpdateView
 
 
 #
@@ -41,7 +42,7 @@ def find_entry(request):
                'end': Entry.objects.filter(phone_number__endswith=phone_number)}
     if not phone_number:
         return JsonResponse(data={'success': False, 'error': 'No number specified'}, status=400)
-    qs = choices[status]
+    qs = choices.get(status, Entry.objects.filter(phone_number__contains=phone_number))
     if not qs.count():
         return JsonResponse(data={'success': False, 'error': 'No number specified'}, status=400)
     return JsonResponse(data={'results': list(qs.values()), 'count': qs.count()}, status=200)
@@ -87,7 +88,16 @@ class Logout(LogoutView):
 class ShowContact(LoginRequiredMixin, ListView):
     model = Entry
     template_name = 'phones/search.html'
+    paginate_by = 2
+    context_object_name = 'contacts'
 
     def get_queryset(self):
-        pk = self.request.user.pk
-        return User.objects.get(pk=pk).entry_set.all()
+        user = self.request.user
+        return Entry.objects.filter(user=user)
+
+
+class EditContact(LoginRequiredMixin, UpdateView):
+    model = Entry
+    fields = ('name', 'last_name', 'phone_number')
+    success_url = reverse_lazy('phones:search')
+    template_name = 'phones/entry_form.html'

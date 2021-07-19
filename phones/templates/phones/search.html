@@ -38,50 +38,77 @@
                 <th>Name</th>
                 <th>Last Name</th>
                 <th>Phone Number</th>
+                <th>Edit</th>
             </tr>
             </thead>
-            <tbody id="output"></tbody>
+            <tbody id="output">
+            {% for contact in contacts %}
+                <tr>
+                    <td>{{ contact.name }}</td>
+                    <td>{{ contact.last_name }}</td>
+                    <td>{{ contact.phone_number }}</td>
+                    <td><a data-primary='{{ contact.id }}' class="btn btn-primary Edit"
+                           href="{% url 'phones:edit' contact.id %}">Edit</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
         </table>
         <p class="text-center invisible" id="total_result"></p>
+        {% include 'phones/pagination.html' %}
     </div>
     <script>
-        $(document).ready(function () {
-            $('#btn').click(function () {
-                const inputSelector = $('#num');
-                const query_text = inputSelector.val();
-                let status = $('input[name="status"]:checked').val();
-                let my_output_div = $('#output');
-                const ajax_config = {
-                    url: '{% url "phones:find" %}',
-                    data: {
-                        phone: query_text,
-                        status: status
-                    },
-                    method: 'GET',
-                    success: function (response) {
-                        if (!$(my_output_div).html().length) { //you can only use once time
-                            $(response.results).each(function (index, obj) {
-                                let my_table = '<tr><td>' + obj.name + '</td><td>'
-                                    + obj.last_name + '</td><td>' + obj.phone_number + '</td></tr>';
-                                my_output_div.append(my_table);
-                            });
-                            $('#total_result').removeClass('invisible').html('Total results is ' + response.count);
-                        } else {
-                            $('#output').empty()
-                        }
-
-                    },
-                    error: function () {
-                        let error = '<tr><td colspan="3"> No match found </td></tr>';
-                        if (!$(my_output_div).html().length) {
-                            my_output_div.append(error);
-                        } else {
-                            $('#output').empty()
-                        }
-                    }
-                };
-                $.ajax(ajax_config);
-            });
-        });
+        {#$(document).ready(function () {#}
+        {#    $('input[name="status"]')[0].checked = true;#}
+        {#    $('#btn').click(function () {#}
+        {#        const inputSelector = $('#num');#}
+        {#        const query_text = inputSelector.val();#}
+        {#        let status = $('input[name="status"]:checked').val();#}
+        {#        let my_output_div = $('#output');#}
+        {#        const ajax_config = {#}
+        {#            url: '{% url "phones:find" %}',#}
+        {#            data: {#}
+        {#                phone: query_text,#}
+        {#                status: status#}
+        {#            },#}
+        {#            method: 'GET',#}
+        {#            success: function (response) {#}
+        {#                if (!$(my_output_div).html().length) { //you can only use once time#}
+        {#                    $(response.results).each(function (index, obj) {#}
+        {#                        let my_table = '<tr><td>' + obj.name + '</td><td>'#}
+        {#                            + obj.last_name + '</td><td>' + obj.phone_number + '</td></tr>';#}
+        {#                        my_output_div.append(my_table);#}
+        {#                    });#}
+        {#                    $('#total_result').removeClass('invisible').html('Total results is ' + response.count);#}
+        {#                } else {#}
+        {#                    $('#output').empty()#}
+        {#                }#}
+        {##}
+        {#            },#}
+        {#            error: function () {#}
+        {#                let error = '<tr><td colspan="3"> No match found </td></tr>';#}
+        {#                if (!$(my_output_div).html().length) {#}
+        {#                    my_output_div.append(error);#}
+        {#                } else {#}
+        {#                    $('#output').empty()#}
+        {#                }#}
+        {#            }#}
+        {#        };#}
+        {#        $.ajax(ajax_config);#}
+        {#    });#}
+        //);
+        {#$(document).ready(function () {#}
+        {#    $('input[name="status"]')[0].checked = true;#}
+        {#    $('.Edit').click(function () {#}
+        {#        $('.edit').removeClass('invisible');#}
+        {#        $.ajax({#}
+        {#            url: '{% url "phones:edit" this.dataset.primary %}',#}
+        {#            data: {#}
+        {#                pk: this.dataset.primary#}
+        {#            },#}
+        {#            success:function (){#}
+        {#                alert('yes');#}
+        {#            }#}
+        {#        });#}
+        {#    });#}
     </script>
 {% endblock %}
